@@ -1,26 +1,28 @@
-# Interview Integrity Platform (Phase 1, 2, & 3)
+# Interview Integrity Platform (Phase 1, 2, 3, & 4)
 
-A high-fidelity, production-quality interview platform foundation, browser telemetry SDK, and vision analytics pipeline. This codebase acts as the user experience and telemetry baseline, built specifically to allow future integration of biometric and activity verification modules without requiring structural refactoring.
+A high-fidelity, production-quality interview platform foundation, browser telemetry SDK, vision analytics pipeline, and speech activity analytics engine. This codebase acts as the user experience and telemetry baseline, built specifically to allow future integration of biometric and activity verification modules without requiring structural refactoring.
 
 ---
 
 ## Project
-The Interview Integrity Platform is designed to mimic a professional, HackerRank + Zoom-style web workspace. In Phase 1, 2, and 3, we have constructed:
+The Interview Integrity Platform is designed to mimic a professional, HackerRank + Zoom-style web workspace. In Phase 1, 2, 3, and 4, we have constructed:
 - Core live interview workspace (question card, timer, webcam, and scratchpad).
 - Multi-store Zustand state layout and abstract browser API services.
 - Independent telemetry event collectors (visibility, window focus, keyboard activity, clipboard, mouse, network).
 - Unified vision analytics pipeline utilizing the latest MediaPipe Tasks Vision Face Landmarker API.
 - Reusable vision extractors computing Yaw, Pitch, Roll (Head Pose), eye gaze vectors (Looking Left/Right/Up/Down/Center), EAR blink analytics, and face presence thresholds.
-- Resizable, collapsible `TelemetryConsole` and `VisionConsole` debug windows (visible only in development) supporting real-time event logs streams and exports.
+- Audio analytics platform processing microphone streams locally via Web Audio API.
+- Reusable audio extractors measuring RMS levels, speech onset/hangover indicators, silence timings, response latency, and hardware mute statuses.
+- Resizable, collapsible `TelemetryConsole`, `VisionConsole`, and `AudioConsole` debug windows (visible only in development) supporting real-time event logs streams and exports.
 
 ---
 
 ## Architecture
 The system employs strict separation of concerns and dependency inversion:
 1. **Component Layer**: Renders UI states and handles user inputs.
-2. **Hook Layer**: Exposes reusable logic (e.g. `useCamera`, `useMicrophone`, `useBrowserTelemetry`, `useVisionLifecycle`) without invoking browser APIs directly.
-3. **Service Layer**: Decouples the frontend from global browser APIs (WebRTC, MediaPipe, Visibility API).
-4. **Zustand State Store**: Segmented into focused units (settings, questions, permissions, session, telemetry, vision) to optimize rendering performance.
+2. **Hook Layer**: Exposes reusable logic (e.g. `useCamera`, `useMicrophone`, `useBrowserTelemetry`, `useVisionLifecycle`, `useAudioLifecycle`) without invoking browser APIs directly.
+3. **Service Layer**: Decouples the frontend from global browser APIs (WebRTC, MediaPipe, Web Audio API, Visibility API).
+4. **Zustand State Store**: Segmented into focused units (settings, questions, permissions, session, telemetry, vision, audio) to optimize rendering performance.
 5. **Event Engine**: An in-memory event bus tracks candidate events to enable review playback.
 
 ---
@@ -37,8 +39,9 @@ frontend/
 │   ├── interview/            # Camera preview, scratchpad, questions
 │   ├── permissions/          # Hardware pre-screen dialogs
 │   ├── settings/             # Settings dialog controllers
-│   ├── telemetry/            # Browser signal collectors, normalizers, console
-│   └── vision/               # Camera processors, feature extractors, landmarker integration
+│   ├── telemetry/            # Browser collectors, normalizers, console
+│   ├── vision/               # Camera processors, feature extractors, landmarker integration
+│   └── audio/                # Audio frame processors, speech extractors, microphone state
 ├── shared/                   # Shared layouts and hooks
 │   ├── components/           # TopNavbar, BottomStatusBar, Layout
 │   └── hooks/                # useCamera, useMicrophone, useClock, useNetwork
@@ -69,14 +72,16 @@ frontend/
 - [x] Resizable, collapsible development-mode Telemetry Console with search and filter parameters.
 - [x] Reusable vision analytics engine with MediaPipe Face Landmarker.
 - [x] Independent head pose, eye gaze, blink detection, and face presence extractors.
-- [x] Floating development-mode Vision Console for real-time measurement tracking.
+- [x] Reusable local speech analytics engine using Web Audio API and AnalyserNode.
+- [x] Independent silence detectors, speaking duration monitors, and response delay gauges.
+- [x] Resizable, collapsible development-mode Audio Console.
 - [x] Clean compilation: Passed typechecks (`npm run build`) and lint verification (`npm run lint`).
 
 ---
 
 ## Roadmap
-- **Phase 4 (Audio)**: Audio frequency vocal analysis via Web Audio API analyzer nodes in `MicrophoneService`.
-- **Phase 5 (Timeline)**: Add a telemetry replay timeline chart to the reviewer console to reconstruct candidate actions matched with recorded video clips.
+- **Phase 5 (Evidence Fusion)**: Add a telemetry replay timeline chart to the reviewer console to reconstruct candidate actions matched with recorded video clips and audio levels.
+- **Phase 6 (Risk Engine)**: Fuse events into suspicious flags alerts.
 
 ---
 
