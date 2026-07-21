@@ -7,6 +7,8 @@ import { eventLogger } from '../../events/logger';
 import { useBrowserTelemetry } from '../../features/telemetry/hooks/useBrowserTelemetry';
 import { TelemetryConsole } from '../../features/telemetry/components/TelemetryConsole';
 
+import { VisionConsole } from '../../features/vision/components/VisionConsole';
+
 interface InterviewLayoutProps {
   children: React.ReactNode;
 }
@@ -56,6 +58,9 @@ export const InterviewLayout: React.FC<InterviewLayoutProps> = ({ children }) =>
 
       {/* Collapsible Telemetry Dev Console */}
       <TelemetryConsole />
+
+      {/* Collapsible Vision Dev Console */}
+      <VisionConsole />
     </div>
   );
 };

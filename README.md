@@ -1,26 +1,27 @@
-# Interview Integrity Platform (Phase 1 & 2)
+# Interview Integrity Platform (Phase 1, 2, & 3)
 
-A high-fidelity, production-quality interview platform foundation and browser telemetry SDK. This codebase acts as the user experience and telemetry baseline, built specifically to allow future integration of biometric and activity verification modules without requiring structural refactoring.
+A high-fidelity, production-quality interview platform foundation, browser telemetry SDK, and vision analytics pipeline. This codebase acts as the user experience and telemetry baseline, built specifically to allow future integration of biometric and activity verification modules without requiring structural refactoring.
 
 ---
 
 ## Project
-The Interview Integrity Platform is designed to mimic a professional, HackerRank + Zoom-style web workspace. In Phase 1 & 2, we have constructed:
+The Interview Integrity Platform is designed to mimic a professional, HackerRank + Zoom-style web workspace. In Phase 1, 2, and 3, we have constructed:
 - Core live interview workspace (question card, timer, webcam, and scratchpad).
 - Multi-store Zustand state layout and abstract browser API services.
-- Independent event collectors (visibility, window focus, keyboard activity, clipboard, mouse, network).
-- Unified normalization engine converting raw signals into sequential telemetry events.
-- Resizable, collapsible `TelemetryConsole` debug window (visible only in development) supporting real-time event stream searches, filters, and local JSON/CSV logs downloads.
+- Independent telemetry event collectors (visibility, window focus, keyboard activity, clipboard, mouse, network).
+- Unified vision analytics pipeline utilizing the latest MediaPipe Tasks Vision Face Landmarker API.
+- Reusable vision extractors computing Yaw, Pitch, Roll (Head Pose), eye gaze vectors (Looking Left/Right/Up/Down/Center), EAR blink analytics, and face presence thresholds.
+- Resizable, collapsible `TelemetryConsole` and `VisionConsole` debug windows (visible only in development) supporting real-time event logs streams and exports.
 
 ---
 
 ## Architecture
 The system employs strict separation of concerns and dependency inversion:
 1. **Component Layer**: Renders UI states and handles user inputs.
-2. **Hook Layer**: Exposes reusable logic (e.g. `useCamera`, `useMicrophone`, `useBrowserTelemetry`) without invoking browser APIs directly.
-3. **Service Layer**: Decouples the frontend from global browser APIs (e.g. WebRTC, localStorage, Visibility API).
-4. **Zustand State Store**: Segmented into focused units (settings, questions, permissions, session, telemetry) to optimize rendering performance.
-5. **Event Engine**: An in-memory event bus tracks candidate telemetry (such as tab-blur/focus events and settings modifications) to enable review playback.
+2. **Hook Layer**: Exposes reusable logic (e.g. `useCamera`, `useMicrophone`, `useBrowserTelemetry`, `useVisionLifecycle`) without invoking browser APIs directly.
+3. **Service Layer**: Decouples the frontend from global browser APIs (WebRTC, MediaPipe, Visibility API).
+4. **Zustand State Store**: Segmented into focused units (settings, questions, permissions, session, telemetry, vision) to optimize rendering performance.
+5. **Event Engine**: An in-memory event bus tracks candidate events to enable review playback.
 
 ---
 
@@ -31,13 +32,13 @@ frontend/
 ├── app/                      # Next.js App Router Page views
 │   ├── page.tsx              # SaaS Landing Page
 │   ├── interview/            # Live Interview Room
-│   ├── dashboard/            # Reviewer Console Mock
 │   └── settings/             # Environment Configuration page
 ├── features/                 # Modular Domain Features
 │   ├── interview/            # Camera preview, scratchpad, questions
 │   ├── permissions/          # Hardware pre-screen dialogs
 │   ├── settings/             # Settings dialog controllers
-│   └── telemetry/            # Browser signal collectors, normalizers, console
+│   ├── telemetry/            # Browser signal collectors, normalizers, console
+│   └── vision/               # Camera processors, feature extractors, landmarker integration
 ├── shared/                   # Shared layouts and hooks
 │   ├── components/           # TopNavbar, BottomStatusBar, Layout
 │   └── hooks/                # useCamera, useMicrophone, useClock, useNetwork
@@ -66,14 +67,16 @@ frontend/
 - [x] In-memory Event Bus capturing tab shifts, hardware statuses, and navigation.
 - [x] WebRTC Video/Audio permission handles and elegant state recovery overlays.
 - [x] Resizable, collapsible development-mode Telemetry Console with search and filter parameters.
+- [x] Reusable vision analytics engine with MediaPipe Face Landmarker.
+- [x] Independent head pose, eye gaze, blink detection, and face presence extractors.
+- [x] Floating development-mode Vision Console for real-time measurement tracking.
 - [x] Clean compilation: Passed typechecks (`npm run build`) and lint verification (`npm run lint`).
 
 ---
 
 ## Roadmap
-- **Phase 3 (Vision)**: Integrate MediaPipe FaceMesh & Eye Tracking landmarks directly into the `CameraPreview` component stream track hook.
 - **Phase 4 (Audio)**: Audio frequency vocal analysis via Web Audio API analyzer nodes in `MicrophoneService`.
-- **Phase 5 (Timeline)**: Add a telemetry replay timeline chart to the `/dashboard` to reconstruct candidate actions matched with recorded video clips.
+- **Phase 5 (Timeline)**: Add a telemetry replay timeline chart to the reviewer console to reconstruct candidate actions matched with recorded video clips.
 
 ---
 
@@ -93,13 +96,3 @@ frontend/
    ```
 4. **Open the platform**:
    Go to [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## Screenshots
-*Screenshots demonstrating the high-fidelity UI layout will be placed in the `/docs/screenshots/` workspace.*
-
----
-
-## Demo GIF
-*A demo video walking through theme toggles, permission dialog prompts, and question navigation will be placed in `/docs/demo.gif`.*
