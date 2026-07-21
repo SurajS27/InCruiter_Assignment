@@ -1,20 +1,25 @@
-# Interview Integrity Platform (Phase 1)
+# Interview Integrity Platform (Phase 1 & 2)
 
-A high-fidelity, production-quality interview platform foundation. This codebase acts as the user experience and telemetry baseline, built specifically to allow future integration of biometric and activity verification modules without requiring structural refactoring.
+A high-fidelity, production-quality interview platform foundation and browser telemetry SDK. This codebase acts as the user experience and telemetry baseline, built specifically to allow future integration of biometric and activity verification modules without requiring structural refactoring.
 
 ---
 
 ## Project
-The Interview Integrity Platform is designed to mimic a professional, HackerRank + Zoom-style web workspace. In this first phase, we have constructed the interview room experience, permission verification pre-screen, local scratchpad utilities, and an extensible, decoupled telemetry event logging system.
+The Interview Integrity Platform is designed to mimic a professional, HackerRank + Zoom-style web workspace. In Phase 1 & 2, we have constructed:
+- Core live interview workspace (question card, timer, webcam, and scratchpad).
+- Multi-store Zustand state layout and abstract browser API services.
+- Independent event collectors (visibility, window focus, keyboard activity, clipboard, mouse, network).
+- Unified normalization engine converting raw signals into sequential telemetry events.
+- Resizable, collapsible `TelemetryConsole` debug window (visible only in development) supporting real-time event stream searches, filters, and local JSON/CSV logs downloads.
 
 ---
 
 ## Architecture
 The system employs strict separation of concerns and dependency inversion:
 1. **Component Layer**: Renders UI states and handles user inputs.
-2. **Hook Layer**: Exposes reusable logic (e.g. `useCamera`, `useMicrophone`) without invoking browser APIs directly.
-3. **Service Layer**: Decouples the frontend from global browser APIs (e.g. `navigator.mediaDevices`, `localStorage`).
-4. **Zustand State Store**: Segmented into focused units (settings, questions, permissions, session) to optimize rendering performance.
+2. **Hook Layer**: Exposes reusable logic (e.g. `useCamera`, `useMicrophone`, `useBrowserTelemetry`) without invoking browser APIs directly.
+3. **Service Layer**: Decouples the frontend from global browser APIs (e.g. WebRTC, localStorage, Visibility API).
+4. **Zustand State Store**: Segmented into focused units (settings, questions, permissions, session, telemetry) to optimize rendering performance.
 5. **Event Engine**: An in-memory event bus tracks candidate telemetry (such as tab-blur/focus events and settings modifications) to enable review playback.
 
 ---
@@ -31,7 +36,8 @@ frontend/
 ├── features/                 # Modular Domain Features
 │   ├── interview/            # Camera preview, scratchpad, questions
 │   ├── permissions/          # Hardware pre-screen dialogs
-│   └── settings/             # Settings dialog controllers
+│   ├── settings/             # Settings dialog controllers
+│   └── telemetry/            # Browser signal collectors, normalizers, console
 ├── shared/                   # Shared layouts and hooks
 │   ├── components/           # TopNavbar, BottomStatusBar, Layout
 │   └── hooks/                # useCamera, useMicrophone, useClock, useNetwork
@@ -59,15 +65,15 @@ frontend/
 - [x] Extensible, decoupled component-hook-service architecture.
 - [x] In-memory Event Bus capturing tab shifts, hardware statuses, and navigation.
 - [x] WebRTC Video/Audio permission handles and elegant state recovery overlays.
-- [x] Responsive layout with Light/Dark and animations toggles.
+- [x] Resizable, collapsible development-mode Telemetry Console with search and filter parameters.
 - [x] Clean compilation: Passed typechecks (`npm run build`) and lint verification (`npm run lint`).
 
 ---
 
 ## Roadmap
-- **Phase 2**: Integrate MediaPipe FaceMesh & Eye Tracking landmarks directly into the `CameraPreview` component stream track hook.
-- **Phase 3**: Audio frequency vocal analysis via Web Audio API analyzer nodes in `MicrophoneService`.
-- **Phase 4**: Add a telemetry replay timeline chart to the `/dashboard` to reconstruct candidate actions matched with recorded video clips.
+- **Phase 3 (Vision)**: Integrate MediaPipe FaceMesh & Eye Tracking landmarks directly into the `CameraPreview` component stream track hook.
+- **Phase 4 (Audio)**: Audio frequency vocal analysis via Web Audio API analyzer nodes in `MicrophoneService`.
+- **Phase 5 (Timeline)**: Add a telemetry replay timeline chart to the `/dashboard` to reconstruct candidate actions matched with recorded video clips.
 
 ---
 

@@ -12,11 +12,11 @@ class EventBus implements IEventBus {
     };
   }
 
-  emit(eventData: Omit<InterviewEvent, 'id' | 'timestamp'>): void {
+  emit(eventData: Omit<InterviewEvent, 'id' | 'timestamp'> & Partial<Pick<InterviewEvent, 'id' | 'timestamp'>>): void {
     const event: InterviewEvent = {
       ...eventData,
-      id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 9),
-      timestamp: new Date().toISOString(),
+      id: eventData.id || (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 9)),
+      timestamp: eventData.timestamp || new Date().toISOString(),
     };
 
     this.events.push(event);
