@@ -8,6 +8,8 @@ import { useBrowserTelemetry } from '../../features/telemetry/hooks/useBrowserTe
 import { TelemetryConsole } from '../../features/telemetry/components/TelemetryConsole';
 
 import { VisionConsole } from '../../features/vision/components/VisionConsole';
+import { useAudioLifecycle } from '../../features/audio/hooks/useAudioLifecycle';
+import { AudioConsole } from '../../features/audio/components/AudioConsole';
 
 interface InterviewLayoutProps {
   children: React.ReactNode;
@@ -18,8 +20,9 @@ export const InterviewLayout: React.FC<InterviewLayoutProps> = ({ children }) =>
   const loadSettings = useSettingsStore((state) => state.loadSettings);
   const theme = useSettingsStore((state) => state.theme);
 
-  // Activate browser telemetry lifecycle hooks
+  // Activate browser telemetry and audio lifecycle hooks
   useBrowserTelemetry();
+  useAudioLifecycle();
 
   useEffect(() => {
     // Load persisted settings
@@ -61,6 +64,9 @@ export const InterviewLayout: React.FC<InterviewLayoutProps> = ({ children }) =>
 
       {/* Collapsible Vision Dev Console */}
       <VisionConsole />
+
+      {/* Collapsible Audio Dev Console */}
+      <AudioConsole />
     </div>
   );
 };
