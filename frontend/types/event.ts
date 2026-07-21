@@ -30,7 +30,27 @@ export type InterviewEventType =
   | 'TELEMETRY_STARTED'
   | 'TELEMETRY_PAUSED'
   | 'TELEMETRY_RESUMED'
-  | 'TELEMETRY_STOPPED';
+  | 'TELEMETRY_STOPPED'
+  // Vision Types:
+  | 'VISION_FRAME_PROCESSED'
+  | 'FACE_DETECTED'
+  | 'FACE_LOST'
+  | 'MULTIPLE_FACES'
+  | 'HEAD_POSE_UPDATED'
+  | 'GAZE_DIRECTION_UPDATED'
+  | 'BLINK_DETECTED'
+  | 'BLINK_RATE_UPDATED'
+  | 'TRACKING_CONFIDENCE_UPDATED'
+  | 'LOW_TRACKING_CONFIDENCE'
+  | 'FRAME_SKIPPED'
+  | 'FRAME_DROPPED'
+  | 'VISION_STARTED'
+  | 'VISION_PAUSED'
+  | 'VISION_RESUMED'
+  | 'VISION_STOPPED'
+  | 'VISION_INITIALIZATION_FAILED'
+  | 'FACE_TRACKING_STARTED'
+  | 'FACE_TRACKING_STOPPED';
 
 export interface InterviewEvent {
   id: string;
@@ -40,4 +60,6 @@ export interface InterviewEvent {
   category?: string;
   source?: string;
   severity?: string;
+  version?: number;
+  confidence?: number;
 }

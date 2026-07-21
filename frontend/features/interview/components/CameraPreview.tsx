@@ -7,12 +7,17 @@ import { useSettingsStore } from '../../../store/useSettingsStore';
 import { StatusBadge } from './StatusBadge';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { useVisionLifecycle } from '../../vision/hooks/useVisionLifecycle';
+
 export const CameraPreview: React.FC = React.memo(() => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { stream, status, error, startCamera } = useCamera();
   const candidateName = useInterviewStore((state) => state.candidateName);
   const cameraEnabled = useSettingsStore((state) => state.cameraEnabled);
   const animationsEnabled = useSettingsStore((state) => state.animationsEnabled);
+
+  // Drive MediaPipe Landmarker loop on the connected camera video stream
+  useVisionLifecycle(videoRef, status === 'connected');
 
   useEffect(() => {
     if (videoRef.current && stream && cameraEnabled) {
