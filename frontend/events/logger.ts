@@ -8,7 +8,7 @@ export class EventLogger {
     if (this.unsubscribe) return;
 
     this.unsubscribe = eventBus.subscribe((event: InterviewEvent) => {
-      const styles = {
+      const styles: Record<string, string> = {
         INTERVIEW_STARTED: 'color: #10B981; font-weight: bold;',
         INTERVIEW_ENDED: 'color: #EF4444; font-weight: bold;',
         CAMERA_ENABLED: 'color: #3B82F6;',

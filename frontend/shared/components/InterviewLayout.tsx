@@ -4,6 +4,8 @@ import { BottomStatusBar } from './BottomStatusBar';
 import { SettingsDialog } from '../../features/settings/components/SettingsDialog';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { eventLogger } from '../../events/logger';
+import { useBrowserTelemetry } from '../../features/telemetry/hooks/useBrowserTelemetry';
+import { TelemetryConsole } from '../../features/telemetry/components/TelemetryConsole';
 
 interface InterviewLayoutProps {
   children: React.ReactNode;
@@ -13,6 +15,9 @@ export const InterviewLayout: React.FC<InterviewLayoutProps> = ({ children }) =>
   const [settingsOpen, setSettingsOpen] = useState(false);
   const loadSettings = useSettingsStore((state) => state.loadSettings);
   const theme = useSettingsStore((state) => state.theme);
+
+  // Activate browser telemetry lifecycle hooks
+  useBrowserTelemetry();
 
   useEffect(() => {
     // Load persisted settings
@@ -48,6 +53,9 @@ export const InterviewLayout: React.FC<InterviewLayoutProps> = ({ children }) =>
 
       {/* Environment Config Modal */}
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+
+      {/* Collapsible Telemetry Dev Console */}
+      <TelemetryConsole />
     </div>
   );
 };
