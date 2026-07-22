@@ -13,12 +13,13 @@ import { InterviewTimer } from '../../features/interview/components/InterviewTim
 import { PermissionDialog } from '../../features/permissions/components/PermissionDialog';
 import { eventService } from '../../services/event.service';
 import { StatusBadge } from '../../features/interview/components/StatusBadge';
-import { User, Award, ArrowLeft, RefreshCcw, GitBranch } from 'lucide-react';
+import { User, Award, ArrowLeft, RefreshCcw, GitBranch, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { useTelemetryStore } from '../../store/useTelemetryStore';
 import { useVisionStore } from '../../store/useVisionStore';
 import { useAudioStore } from '../../store/useAudioStore';
 import { useEvidenceStore } from '../../features/evidence/store/useEvidenceStore';
+import { useRiskStore } from '../../features/risk/store/useRiskStore';
 
 export default function InterviewRoomPage() {
   const {
@@ -76,6 +77,7 @@ export default function InterviewRoomPage() {
     useVisionStore.getState().clearVisionEvents();
     useAudioStore.getState().clearAudioEvents();
     useEvidenceStore.getState().clearEvidence();
+    useRiskStore.getState().clearRisk();
   };
 
   // 1. Pre-interview State: Prompt for Permissions and Candidate name
@@ -91,6 +93,7 @@ export default function InterviewRoomPage() {
   if (interviewEndedAt) {
     const timeline = eventService.getEventTimeline();
     const evidenceTimeline = useEvidenceStore.getState().timeline;
+    const currentAssessment = useRiskStore.getState().currentAssessment;
 
     return (
       <InterviewLayout>
@@ -128,6 +131,45 @@ export default function InterviewRoomPage() {
               <div className="space-y-1">
                 <p className="text-[10px] uppercase font-bold text-zinc-500">System Logs Collected</p>
                 <p className="text-violet-400 font-bold">{timeline.length} events logged</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Overall Risk Assessment Card */}
+          <div className="p-6 border border-zinc-900 bg-zinc-950/40 backdrop-blur-md rounded-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
+              <h3 className="text-sm font-bold text-zinc-200 uppercase tracking-widest flex items-center space-x-2">
+                <ShieldAlert className="w-4 h-4 text-rose-400" />
+                <span>Overall Risk Assessment Summary</span>
+              </h3>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold tracking-wider ${
+                currentAssessment?.overallRisk === 'CRITICAL'
+                  ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                  : currentAssessment?.overallRisk === 'HIGH'
+                  ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                  : currentAssessment?.overallRisk === 'MODERATE'
+                  ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                  : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+              }`}>
+                {currentAssessment?.overallRisk || 'LOW'}
+              </span>
+            </div>
+
+            <div className="space-y-3.5 text-zinc-300 text-xs">
+              <div className="flex items-center justify-between border-b border-zinc-900/60 pb-2">
+                <span className="text-zinc-500">Telemetry Severity Index</span>
+                <span className="font-semibold text-zinc-200">{currentAssessment?.totalContribution || 0} pts</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-zinc-900/60 pb-2">
+                <span className="text-zinc-500">Evaluation Confidence</span>
+                <span className="font-semibold text-zinc-200">{currentAssessment ? Math.round(currentAssessment.averageConfidence * 100) : 100}%</span>
+              </div>
+              
+              <div className="space-y-1.5 pt-1">
+                <span className="text-[10px] uppercase font-bold text-zinc-500 block">Assessment Explanation</span>
+                <p className="p-3 rounded-lg border border-zinc-900 bg-zinc-950/60 text-zinc-300 leading-relaxed italic font-mono text-[11px]">
+                  {currentAssessment?.summary || 'The assessment indicates standard candidate session activities with no telemetry flags.'}
+                </p>
               </div>
             </div>
           </div>
