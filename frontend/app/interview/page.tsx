@@ -13,8 +13,12 @@ import { InterviewTimer } from '../../features/interview/components/InterviewTim
 import { PermissionDialog } from '../../features/permissions/components/PermissionDialog';
 import { eventService } from '../../services/event.service';
 import { StatusBadge } from '../../features/interview/components/StatusBadge';
-import { User, Award, ArrowLeft, RefreshCcw } from 'lucide-react';
+import { User, Award, ArrowLeft, RefreshCcw, GitBranch } from 'lucide-react';
 import Link from 'next/link';
+import { useTelemetryStore } from '../../store/useTelemetryStore';
+import { useVisionStore } from '../../store/useVisionStore';
+import { useAudioStore } from '../../store/useAudioStore';
+import { useEvidenceStore } from '../../features/evidence/store/useEvidenceStore';
 
 export default function InterviewRoomPage() {
   const {
@@ -68,6 +72,10 @@ export default function InterviewRoomPage() {
     resetSession();
     resetQuestions();
     eventService.resetTimeline();
+    useTelemetryStore.getState().clearEvents();
+    useVisionStore.getState().clearVisionEvents();
+    useAudioStore.getState().clearAudioEvents();
+    useEvidenceStore.getState().clearEvidence();
   };
 
   // 1. Pre-interview State: Prompt for Permissions and Candidate name
@@ -82,6 +90,7 @@ export default function InterviewRoomPage() {
   // 2. Interview Completed Summary State
   if (interviewEndedAt) {
     const timeline = eventService.getEventTimeline();
+    const evidenceTimeline = useEvidenceStore.getState().timeline;
 
     return (
       <InterviewLayout>
@@ -121,6 +130,63 @@ export default function InterviewRoomPage() {
                 <p className="text-violet-400 font-bold">{timeline.length} events logged</p>
               </div>
             </div>
+          </div>
+
+          {/* Fused Evidence Observations Report Card */}
+          <div className="p-6 border border-zinc-900 bg-zinc-950/40 backdrop-blur-md rounded-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
+              <h3 className="text-sm font-bold text-zinc-200 uppercase tracking-widest flex items-center space-x-2">
+                <GitBranch className="w-4 h-4 text-indigo-400" />
+                <span>Evidence Observations Report</span>
+              </h3>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold font-mono">
+                {evidenceTimeline.length} Observations
+              </span>
+            </div>
+            
+            {evidenceTimeline.length === 0 ? (
+              <p className="text-zinc-500 text-xs italic font-mono py-2">
+                No high-level evidence observations were recorded during this session.
+              </p>
+            ) : (
+              <div className="space-y-3 max-h-[260px] overflow-y-auto pr-2 font-mono text-[10px]">
+                {evidenceTimeline.map((evidence) => {
+                  const isHigh = evidence.severity === 'high';
+                  return (
+                    <div
+                      key={evidence.id}
+                      className={`p-3 border rounded-xl space-y-2 ${
+                        isHigh
+                          ? 'border-rose-950/40 bg-rose-950/5 text-rose-300'
+                          : 'border-zinc-900/60 bg-zinc-900/10 text-zinc-400'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between border-b border-zinc-900/40 pb-1.5 text-zinc-500 font-semibold">
+                        <span>[{evidence.id}] {evidence.type}</span>
+                        <span className={`px-1.5 rounded uppercase font-bold text-[8px] ${
+                          isHigh ? 'bg-rose-500/10 text-rose-400' : 'bg-zinc-900 text-zinc-500'
+                        }`}>
+                          {evidence.severity}
+                        </span>
+                      </div>
+                      <div className="text-zinc-200 font-bold text-xs uppercase tracking-wide">
+                        {evidence.title}
+                      </div>
+                      <div className="text-zinc-400 text-xs">
+                        {evidence.description}
+                      </div>
+                      <div className="pt-1.5 border-t border-zinc-900/40 flex items-center justify-between text-zinc-500 text-[9px]">
+                        <span>Confidence: {Math.round(evidence.confidence * 100)}%</span>
+                        <span>Duration: {evidence.duration}s</span>
+                      </div>
+                      <div className="text-zinc-600 text-[8px] break-all">
+                        Supporting events: {JSON.stringify(evidence.supportingEvents)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Real-time Telemetry Timeline Playback (Decoupled compatibility demonstration) */}
