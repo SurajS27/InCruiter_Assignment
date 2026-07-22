@@ -10,6 +10,8 @@ import { TelemetryConsole } from '../../features/telemetry/components/TelemetryC
 import { VisionConsole } from '../../features/vision/components/VisionConsole';
 import { useAudioLifecycle } from '../../features/audio/hooks/useAudioLifecycle';
 import { AudioConsole } from '../../features/audio/components/AudioConsole';
+import { EvidenceConsole } from '../../features/evidence/components/EvidenceConsole';
+import { RiskConsole } from '../../features/risk/components/RiskConsole';
 
 interface InterviewLayoutProps {
   children: React.ReactNode;
@@ -67,6 +69,12 @@ export const InterviewLayout: React.FC<InterviewLayoutProps> = ({ children }) =>
 
       {/* Collapsible Audio Dev Console */}
       <AudioConsole />
+
+      {/* Collapsible Evidence Dev Console */}
+      <EvidenceConsole />
+
+      {/* Collapsible Risk Dev Console */}
+      <RiskConsole />
     </div>
   );
 };
