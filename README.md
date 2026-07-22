@@ -1,94 +1,49 @@
-# Interview Integrity Platform (Phase 1, 2, 3, 4, 5, & 6)
+# Interview Integrity Platform (Phases 1 - 7)
 
-A high-fidelity, production-quality interview platform foundation, browser telemetry SDK, vision analytics pipeline, speech activity analytics engine, evidence fusion layer, and explainable risk scoring engine. This codebase acts as the user experience and telemetry baseline, built specifically to allow future integration of reviewer dashboard dashboards without requiring structural refactoring.
+A high-fidelity, production-quality interview platform foundation, browser telemetry SDK, vision analytics pipeline, speech activity analytics engine, evidence fusion layer, explainable risk scoring engine, and two-party collaboration system.
 
 ---
 
 ## Project
-The Interview Integrity Platform is designed to mimic a professional, HackerRank + Zoom-style web workspace. In Phase 1 to 6, we have constructed:
+The Interview Integrity Platform is designed to mimic a professional, HackerRank + Zoom-style web workspace. Across all phases, we have constructed:
 - Core live interview workspace (question card, timer, webcam, and scratchpad).
 - Multi-store Zustand state layout and abstract browser API services.
 - Independent telemetry event collectors (visibility, window focus, keyboard activity, clipboard, mouse, network).
 - Unified vision analytics pipeline utilizing the latest MediaPipe Tasks Vision Face Landmarker API.
-- Reusable vision extractors computing Yaw, Pitch, Roll (Head Pose), eye gaze vectors, EAR blink analytics, and face presence thresholds.
+- Reusable vision extractors computing Head Pose, eye gaze, blink detection, and face presence.
 - Audio analytics platform processing microphone streams locally via Web Audio API.
-- Reusable audio extractors measuring RMS levels, speech onset/hangover indicators, silence timings, response latency, and hardware mute statuses.
+- Reusable audio extractors measuring RMS levels, silence, and response latency.
 - Evidence Fusion reasoning platform correlating low-level events over a rolling 30-second context window.
-- **Explainable Risk Scoring Engine** consuming fused evidence timeline feeds. Evaluates independent rules mapping configurable weights and thresholds, aggregates contributions ($Weight \times Confidence$), and generates Overall Assessments (`LOW`, `MODERATE`, `HIGH`, `CRITICAL`) with deterministic trace explanations.
-- Resizable, collapsible `TelemetryConsole`, `VisionConsole`, `AudioConsole`, `EvidenceConsole`, and `RiskConsole` debug windows (visible only in development) supporting real-time event logs streams and exports.
-
----
-
-## Architecture
-The system employs strict separation of concerns and dependency inversion:
-1. **Component Layer**: Renders UI states and handles user inputs.
-2. **Hook Layer**: Exposes reusable logic (e.g. `useCamera`, `useMicrophone`, `useBrowserTelemetry`, `useVisionLifecycle`, `useAudioLifecycle`, `useEvidence`, `useRisk`) without invoking browser APIs directly.
-3. **Service Layer**: Decouples the frontend from global browser APIs (WebRTC, MediaPipe, Web Audio API, Visibility API).
-4. **Zustand State Store**: Segmented into focused units (settings, questions, permissions, session, telemetry, vision, audio, evidence, risk) to optimize rendering performance.
-5. **Event Engine**: An in-memory event bus tracks candidate events to enable review playback.
+- Explainable Risk Scoring Engine evaluating independent weighted rules to produce LOW/MODERATE/HIGH/CRITICAL trace assessments.
+- **Two-Party Interview Collaboration Workspace** splitting pages into a minimal Candidate Interface and a rich Interviewer Workspace featuring dual webcam panels, question manager synchronization, manual scorecards, markdown scratchpads, and chronological session timelines.
 
 ---
 
 ## Folder Structure
-The workspace follows a feature-first architecture layout:
+The workspace follows a modular layout:
 ```
 frontend/
 ├── app/                      # Next.js App Router Page views
-│   ├── page.tsx              # SaaS Landing Page
-│   ├── interview/            # Live Interview Room
+│   ├── page.tsx              # Role Selector Gateway Home
+│   ├── candidate/            # Minimal Candidate Session workspace
+│   ├── interviewer/          # Professional Interviewer evaluation room
 │   └── settings/             # Environment Configuration page
 ├── features/                 # Modular Domain Features
 │   ├── interview/            # Camera preview, scratchpad, questions
 │   ├── permissions/          # Hardware pre-screen dialogs
 │   ├── settings/             # Settings dialog controllers
 │   ├── telemetry/            # Browser collectors, normalizers, console
-│   ├── vision/               # Camera processors, feature extractors, landmarker integration
-│   ├── audio/                # Audio frame processors, speech extractors, microphone state
-│   ├── evidence/             # Correlator, builder, rules, deduplicator, store, console
-│   └── risk/                 # Coordinator, aggregator, assessor, weights configuration, store, console
+│   ├── vision/               # Camera processors, landmarker integration
+│   ├── audio/                # Audio frame processors, speech extractors
+│   ├── evidence/             # Correlator, store, console
+│   ├── risk/                 # Coordinator, aggregator, store, console
+│   └── interviewer/          # Question panels, scorecards, notes, stores
 ├── shared/                   # Shared layouts and hooks
-│   ├── components/           # TopNavbar, BottomStatusBar, Layout
-│   └── hooks/                # useCamera, useMicrophone, useClock, useNetwork
 ├── services/                 # Hardware & Browser API Abstractions
 ├── store/                    # Segmented Zustand State Management
 ├── events/                   # Telemetry In-Memory Event Bus
-├── types/                    # Common Domain models
-└── constants/                # Engineering questions and config
+└── types/                    # Common Domain models
 ```
-
----
-
-## Tech Stack
-- **Framework**: Next.js 15 (App Router)
-- **Runtime**: React 19 & TypeScript
-- **Styling**: TailwindCSS & shadcn/ui
-- **State Management**: Zustand
-- **Animations**: Framer Motion
-- **Icons**: Lucide Icons
-- **Forms**: React Hook Form
-
----
-
-## Current Progress
-- [x] Extensible, decoupled component-hook-service architecture.
-- [x] In-memory Event Bus capturing tab shifts, hardware statuses, and navigation.
-- [x] WebRTC Video/Audio permission handles and elegant state recovery overlays.
-- [x] Resizable, collapsible development-mode Telemetry Console with search and filter parameters.
-- [x] Reusable vision analytics engine with MediaPipe Face Landmarker.
-- [x] Independent head pose, eye gaze, blink detection, and face presence extractors.
-- [x] Reusable local speech analytics engine using Web Audio API and AnalyserNode.
-- [x] Independent silence detectors, speaking duration monitors, and response delay gauges.
-- [x] Evidence Fusion reasoning platform correlating low-level events over a rolling 30-second context window.
-- [x] Deduplication and state-change lifecycle rules for explainable Evidence observations.
-- [x] Explainable Risk Scoring engine evaluating independent weighted factor rules.
-- [x] Overall trace Assessments dashboard mapping scores to LOW/MODERATE/HIGH/CRITICAL categories.
-- [x] Resizable, collapsible development-mode Risk Console.
-- [x] Clean compilation: Passed typechecks (`npm run build`) and lint verification (`npm run lint`).
-
----
-
-## Roadmap
-- **Phase 7 (Reviewer Dashboard)**: Display explainable evidence timeline maps and review session playback interfaces.
 
 ---
 
@@ -107,4 +62,4 @@ frontend/
    npm run dev
    ```
 4. **Open the platform**:
-   Go to [http://localhost:3000](http://localhost:3000) in your browser.
+   Go to [http://localhost:3000](http://localhost:3000) in your browser. Select a role and input the candidate name to test!
